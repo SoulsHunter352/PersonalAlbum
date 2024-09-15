@@ -1,0 +1,15 @@
+{% load static %}
+
+<div id="modal_wrapper">
+<div id="modal">
+    <h3>Удаление альбома</h3>
+    <p>Вы уверены, что хотите удалить альбом?</p>
+    <form action="" id="confirm_delete" method="post">
+        {% csrf_token %}
+
+        <button class="delete_button" type="submit">Удалить</button>
+        <button type="button" class="edit_button" onclick="close_modal()">Отмена</button>
+    </form>
+</div>
+</div>
+<link href="{% static 'main_pages/css/confirmation_form.css' %}" rel="stylesheet">

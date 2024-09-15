@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="form-wrapper">
+        <form action="" class="add-album card bg-light" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h3>{{ title }}</h3>
+        </form>
+    </div>
+</div>
+<link href="{% static 'main_pages/css/create_album.css' %}" rel="stylesheet">
+{% endblock content %}

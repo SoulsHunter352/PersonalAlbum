@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="profile_wrapper">
+    <h3>Обновить данные</h3>
+    <div class="card profile_info bg-light shadow-lg">
+        {% if profile.photo %}
+        <img src="profile.photo.url" alt="Аватар" class="user_photo mb-1">
+        {% else %}
+        <img src="{% static 'users/images/default_profile.png' %}" alt="Аватар" class="user_photo mb-1">
+        {% endif %}
+        <form class="d-flex flex-column" method="post">
+            {% csrf_token %}
+            <div class="mb-2">
+                <label for="{{ field.username.id_for_label }}" class="small form-label text-muted">{{ form.username.label }}</label>
+                {{ form.username }}
+                <div class="errors">{{ form.username.errors }}</div>
+            </div>
+            <div class="mb-2">
+                <label for="{{ field.email.id_for_label }}" class="small form-label text-muted">{{ form.email.label }}</label>
+                {{ form.email }}
+                <div class="errors">{{ form.email.errors }}</div>
+            </div>
+            <div class="mb-2">
+                {{ form.public_email }}
+                <label for="{{ field.public_email.id_for_label }}" class="form-label text-muted">{{ form.public_email.label }}</label>
+            </div>
+
+            <button class="btn btn-primary" type="submit">Сохранить</button>
+        </form>
+    </div>
+</div>
+<link rel="stylesheet" href="{% static 'users/css/update_account.css' %}">
+{% endblock content %}

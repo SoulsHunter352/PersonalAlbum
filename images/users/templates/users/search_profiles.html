@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .user_photo{
+      width: 58px;
+    }
+</style>
+<div class="card bg-light m-1 p-2 d-flex flex-column align-items-center">
+<h3>{{ title }}</h3>
+  {% if profiles %}
+  <div class="m-2 p-2 d-flex flex-wrap justify-content-center" style="width: 80%;">
+    {% for profile in profiles %}
+    <div class="card m-2 p-2 d-flex flex-column align-items-center" style="width: 180px;">
+      {% if profile.photo %}
+        <img src="profile.photo.url" alt="Аватар" class="user_photo mb-1">
+        {% else %}
+        <img src="{% static 'users/images/default_profile.png' %}" alt="Аватар" class="user_photo mb-1">
+      {% endif %}
+      <p>{{ profile.username }}</p>
+      <a href="{% url 'users:profile' profile.username %}" class="btn btn-primary">Профиль</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <h6>Отсутствуют пользователи с таким именем</h6>
+  {% endif %}
+</div>
+{% endblock content %}

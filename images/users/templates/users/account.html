@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+<div class="profile_wrapper">
+    <div class="card profile_info bg-light shadow-lg">
+        {% if profile.photo %}
+        <img src="profile.photo.url" alt="Аватар" class="user_photo mb-1">
+        {% else %}
+        <img src="{% static 'users/images/default_profile.png' %}" alt="Аватар" class="user_photo mb-1">
+        {% endif %}
+        {% if profile.public_email or is_self %}
+        <div class="info">
+            <p class="small text-muted mb-1">Email</p>
+            <p class="mb-0">{{ profile.email }}</p>
+        </div>
+        {% endif %}
+        <div class="info">
+            <p class="small text-muted mb-1">Username</p>
+            <p class="mb-0">{{ profile.username }}</p>
+        </div>
+        {% if is_self %}
+        <div class="mb-1">
+            <a href="{% url 'users:update_profile' %}" class="btn btn-primary">Изменить</a>
+        </div>
+        <div>
+            <a href="{% url 'users:password_change' %}" style="text-decoration: none;">Сменить пароль</a>
+        </div>
+        {% elif is_auth %}
+            {% if is_friend %}
+            <div class="mb-1">
+                <button class="btn btn-outline-primary disabled">Вы друзья</button>
+            </div>
+            {% elif request_status == -1 %}
+            <div class="mb-1">
+                <button id="request_action" class="btn btn-outline-danger" onclick="friendRequest('{% url 'friend:cancel_friend_request' profile.id %}');" value="">Отменить заявку</button>
+            </div>
+            {% elif request_status == 1 %}
+            <div id="actions" class="mb-1 card d-flex flex-column align-items-center" style="width: 100%;">
+                    <p>Добавить в друзья</p>
+                    <div class="d-flex flex-row">
+                        <img id="reject" src="{% static 'users/images/close.png' %}" alt="" style="width: 38px;" class="m-1" onclick="action_friend_request('{% url 'friend:reject_friend_request' profile.id %}');">
+                        <img id="accept" src="{% static 'users/images/check.png' %}" alt="" style="width: 38px;" class="m-1" onclick="action_friend_request('{% url 'friend:accept_friend_request' profile.id %}');">
+                    </div>
+            </div>
+            {% else %}
+            <div class="mb-1">
+                <button id="request_action" class="btn btn-primary" onclick="friendRequest('{% url 'friend:send_friend_request' profile.id %}');">
+                    Добавить в друзья</button>
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
+    <div>
+        <div class="card social-info mx-2 p-2">
+            <div class="albums-info d-flex">
+                {% if is_self %}
+                    <a href="{% url 'albums' %}"><img class="logo2" src="{% static 'users/images/photo_album.png' %}"></a>
+                {% else %}
+                    {% if cnt_albums > 0 %}
+                    <a href="{% url 'albums' %}?u={{ title }}"><img class="logo2" src="{% static 'users/images/photo_album.png' %}"></a>
+                    {% else %}
+                    <a href=""><img class="logo2" src="{% static 'users/images/photo_album.png' %}"></a>
+                    {% endif %}
+                {% endif %}
+
+                <p class="cnt">{{ cnt_albums }}</p>
+            </div>
+            <p class="m-0" style="color:red;">Альбомы</p>
+        </div>
+        <div class="card social-info mx-2 mt-2 p-2">
+            <div class="d-flex">
+                <a><img class="logo2" src="{% static 'users/images/friends.png' %}"></a>
+                <p class="cnt">{{ cnt_friends }}</p>
+            </div>
+            <p class="m-0" style="color:red;">Друзья</p>
+        </div>
+    </div>
+
+</div>
+<link rel="stylesheet" href="{% static 'users/css/profile.css' %}">
+<script type="text/javascript">
+    let sendRequestButton = document.querySelector('#send_request');
+    let cancelRequestButton = document.querySelector('#cancel_request');
+    const send_url = "'{% url 'friend:send_friend_request' profile.id %}'";
+    const cancel_url ="'{% url 'friend:cancel_friend_request' profile.id %}'";
+    const accept_url = '{% url 'friend:accept_friend_request' profile.id %}';
+    const reject_url = '{% url 'friend:reject_friend_request' profile.id %}';
+    function friendRequest(url)
+    {
+        let request_action = document.querySelector('#request_action');  // Получаем кнопку управления
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', url);
+        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');  // Устанавливаем заголовки
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.onload = () => {
+            if (xhr.status !== 200)
+            {
+                return;
+            }
+            let json = JSON.parse(xhr.responseText);
+            if (json.is_success)
+            {
+                if (json.status == 'send')
+                {
+                    request_action.className = "btn btn-primary";  // Меняем класс
+                    request_action.setAttribute( "onClick", "friendRequest("+send_url+");" );  // Меняем функцию при нажатии
+                    request_action.innerHTML = 'Добавить в друзья';  // Меняем подпись для картинки
+                }
+                else
+                {
+                    request_action.className = "btn btn-outline-danger";  // Меняем класс
+                    request_action.setAttribute( "onClick", "friendRequest("+cancel_url+");" );  // Меняем функцию при нажатии
+                    request_action.innerHTML = 'Отменить заявку';  // Меняем подпись для кнопки
+                }
+            }
+        }
+        xhr.send();
+    }
+    function action_friend_request(url)
+    {
+        let actions = document.querySelector('#actions');
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', url);
+        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');  // Устанавливаем заголовки
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.onload = () =>{
+            if (xhr.status !== 200){
+                return;
+            }
+            let json = JSON.parse(xhr.responseText);
+            if (json.is_success)
+            {
+                while (actions.firstChild)
+                {
+                    actions.removeChild(actions.firstChild);  // Удаляем все элементы внутри
+                }
+                let new_button = document.createElement('button');  // Создаем кнопку
+                actions.className = 'mb-1';  // Устанавливаем новый класс для блока
+                actions.setAttribute('style', '');  // Удаляем все стили
+                if (json.status == 'friends')  // Если друзья
+                {
+                    new_button.className = 'btn btn-outline-primary disabled';
+                    new_button.innerHTML = 'Вы друзья';
+                }
+                else  // Если отклонили запрос
+                {
+                    new_button.className = 'btn btn-primary';
+                    new_button.innerHTML = 'Добавить в друзья';
+                    new_button.setAttribute( "onClick", "friendRequest("+send_url+");" );
+                }
+                actions.appendChild(new_button);
+            }
+        }
+        xhr.send();
+    }
+</script>
+{% endblock content %}

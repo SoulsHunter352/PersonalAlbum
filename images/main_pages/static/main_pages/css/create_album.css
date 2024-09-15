@@ -1,0 +1,41 @@
+.content-wrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-wrapper{
+    width: 600px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    margin-bottom: 40px;
+}
+
+form.add-album{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+
+.submit_button{
+    width: 200px;
+    height: 40px;
+    background: #e3b220;
+    border-radius: 10px;
+}
+
+.submit_button:hover{
+    background: #ffc825;
+    transition: all 1s;
+    transform: scale(1.01);
+}
+
+.input_labels{
+    margin-bottom: 0.8em;
+    margin-top: 0.5em;
+}

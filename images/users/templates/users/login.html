@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="form_wrapper">
+<div class="form">
+    <h2>{{ title }}</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="errors">{{ form.non_field_errors }}</div>
+    <input type="hidden" name="next" value="{{ next }}">
+    {% for field in form %}
+    <div class="field"><label for="{{ field.id_for_label }}" class="small form-label text-muted">{{ field.label }}</label><br>{{ field }}
+        <div class="errors">{{ field.errors }}</div>
+    </div>
+
+    {% endfor %}
+    <button type="submit" class="button">Войти</button>
+</form>
+</div>
+</div>
+<link href="{% static 'users/css/form.css' %}" rel="stylesheet">
+{% endblock content %}

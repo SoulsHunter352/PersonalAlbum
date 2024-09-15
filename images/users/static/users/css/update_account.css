@@ -1,0 +1,21 @@
+.profile_wrapper{
+    width: 100%;
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile_info{
+    width: 340px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 4px;
+}
+
+.user_photo{
+    width: 100px;
+    height: auto;
+}

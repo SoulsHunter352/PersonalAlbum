@@ -1,0 +1,85 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link type="text/css"  href="{% static 'main_pages/css/style.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'main_pages/css/index.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<header>
+{% block navigation %}
+<nav>
+    <div class="d-flex align-items-center">
+        <a class="a_logo" href="{% url 'home' %}"><img src="{% static 'main_pages/images/logo2.png'%}" alt="логотип" class="logo"></a>
+        <form method="get" onsubmit="return searchUsers();">
+            <div class="input-group">
+                <input id="q" class="form-control" type="text" placeholder="Поиск..." name="q">
+                <button class="btn btn-light" type="submit">Найти</button>
+            </div>
+
+        </form>
+    </div>
+    <ul class="navigation mt-3">
+    {% for menu_item in menu %}
+        {% if user.is_authenticated %}
+            {% if not menu_item.for_guest %}
+                <li class="menu_item"><a class="menu" href="{% url menu_item.url_name %}">{{ menu_item.title }}</a></li>
+            {% endif %}
+        {% else %}
+            {% if menu_item.for_guest %}
+                <li class="menu_item"><a class="menu" href="{% url menu_item.url_name %}">{{ menu_item.title }}</a></li>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+     {% if user.is_authenticated %}
+        <li class="menu_item"><a class="menu" href="{% url 'users:profile' user.username%}"><img style="height: 37px;" src="{% static 'users/images/account.png' %}"></a></li>
+        <li class="menu_item"><a class="menu" href="{% url 'users:logout' %}">Выйти({{ user.username }})</a></li>
+     {% endif %}
+    </ul>
+    <div class="button-sidebar-wrapper"><span class="sidebar-button"></span></div>
+</nav>
+<nav class="sidebar">
+    <ul class="navigation-sidebar">
+    {% for menu_item in menu %}
+        {% if user.is_authenticated %}
+            {% if menu_item.for_guest == False %}
+                <li class="menu_item"><a class="menu" href="{% url menu_item.url_name %}">{{ menu_item.title }}</a></li>
+            {% endif %}
+        {% else %}
+            {% if menu_item.for_guest %}
+
+                <li class="menu_item"><a class="menu" href="{% url menu_item.url_name %}">{{ menu_item.title }}</a></li>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    {% if user.is_authenticated %}
+       <li class="menu_item"><a class="menu" href="{% url 'users:profile' user.username%}"><img style="height: 37px;" src="{% static 'users/images/account.png' %}"></a></li>
+       <li class="menu_item"><a class="menu" href="{% url 'users:logout' %}">Выйти({{ user.username }})</a></li>
+    {% endif %}
+    </ul>
+</nav>
+{% endblock navigation %}
+</header>
+<div class="site-wrapper">
+{% block content %}
+{% endblock content %}
+</div>
+<footer>
+</footer>
+<script src="{% static 'main_pages/js/script.js' %}"></script>
+<script type="text/javascript">
+    function searchUsers()
+    {
+        let query = document.querySelector("#q").value;
+        window.location.replace("{% url 'users:search_users' %}?q=" + query);
+        return false;
+    }
+</script>
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

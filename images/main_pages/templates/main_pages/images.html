@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content">
+<h2>{{ title}}</h2>
+{% if is_self %}
+<a class="btn btn-success btn-lg" href="{% url 'add_image_to_album' album_slug %}">Добавить картинку</a>
+{% endif %}
+<link rel="stylesheet" href="{% static 'main_pages/css/images.css' %}">
+<link rel="stylesheet" href="{% static 'main_pages/css/buttons.css' %}">
+<div class="images">
+    {% for image in images %}
+    <div class="image">
+    {% if image.photo.width >= image.photo.height %}
+    <div class="standard_image horizontal_image" style="background-image:url({{ image.photo.url }})">
+    {% else %}
+    <div class="standard_image vertical_image" style="background-image:url('{{ image.photo.url }}')">
+    {% endif %}
+    <div class="about_image">
+        {% if is_self %}
+        {% if image.public %}
+            <img onclick="change_visibility({{ image.id }}, '{% url 'change_image_visibility' image.id %}')" src="{% static 'main_pages/images/visibility_white.png' %}" alt="" class="visibility" id="image-{{ image.id }}">
+            {% else %}
+            <img onclick="change_visibility({{ image.id }}, '{% url 'change_image_visibility' image.id %}')" src="{% static 'main_pages/images/visibility_off_white.png' %}" alt="" class="visibility" id="image-{{ image.id }}">
+            {% endif %}
+        {% endif %}
+        <div><p>{{ image.title|truncatewords:30 }}</p></div>
+        <div class="actions">
+            {% if is_self %}
+                <a href="{% url 'show_image' image.id %}"><img src="{% static 'main_pages/images/view.png' %}" alt="Посмотреть" class="edit"></a>
+            {% else %}
+                <a href="{% url 'show_image' image.id %}?u={{ username }}"><img src="{% static 'main_pages/images/view.png' %}" alt="Посмотреть" class="edit"></a>
+            {% endif %}
+            {% if is_self %}
+            <a href="{% url 'update_image' image.id %}"><img src="{% static 'main_pages/images/edit2.png' %}" alt="Изменить" class="edit"></a>
+            <a onclick="show_modal('{% url 'delete_image' album_slug image.id %}')"><img src="{% static 'main_pages/images/delete.png' %}" alt="Удалить" class="delete"></a>
+            {% endif %}
+        </div>
+    </div>
+    </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
+{% if is_self %}
+    {% include 'main_pages/includes/confirmation_form.html' %}
+{% endif %}
+<script type="text/javascript">
+    function change_visibility(id, request_url)
+    {
+        let xhr = new XMLHttpRequest();
+        let form_data = 'album_id=' + id;
+        let item = document.querySelector("#image-" + id);  // Получаем кнопку управления
+        xhr.open('POST', request_url);  // Открываем запрос
+        xhr.response_type = 'json';
+        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');  // Устанавливаем заголовки
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.onload = () => {
+            if (xhr.status !== 200){
+                return;
+            }
+            let json = JSON.parse(xhr.responseText);  // Преобразуем текст в json
+            if (json.new_visibility){
+                item.src = "{% static 'main_pages/images/visibility_white.png' %}";
+            }
+            else{
+                item.src = "{% static 'main_pages/images/visibility_off_white.png' %}";
+            }
+        };
+        xhr.send(form_data);  // Отправляем запрос
+    }
+</script>
+{% endblock content %}

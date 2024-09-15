@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="content">
+<h2>{{ title }}</h2>
+{% if is_self %}
+<a href="{% url 'create_album' %}" class="btn btn-success btn-lg">Создать альбом</a>
+{% endif %}
+{% if albums %}
+<div class="list_wrapper">
+
+    {% for album in albums %}
+    <div class="item_wrapper">
+    {% if album.photo %}
+    <div class="list_item" style="background-image:url('{{ album.photo.url }}')">
+        {% if is_self %}
+        <a class="list_link" href="{{ album.get_absolute_url }}" >Посмотреть альбом</a>
+        {% else %}
+        <a class="list_link" href="{{ album.get_absolute_url }}?u={{ username }}" >Посмотреть альбом</a>
+        {% endif %}
+    </div>
+    {% else %}
+        <div class="list_item">
+        {% if is_self %}
+        <a class="list_link" href="{{ album.get_absolute_url }}" >Посмотреть альбом</a>
+        {% else %}
+        <a class="list_link" href="{{ album.get_absolute_url }}?u={{ username }}" >Посмотреть альбом</a>
+        {% endif %}
+        </div>
+    {% endif %}
+    <p class="list_title">{{album.name}}</p>
+    {% if is_self %}
+    <div class="actions">
+        <a href="{% url 'edit' album.id %}"><img class="edit" src="{% static 'main_pages/images/edit.png' %}"></a>
+        <a onclick="show_modal('{% url 'delete_album' album.id %}')"><img class="delete" src="{% static 'main_pages/images/delete.png' %}"></a>
+        {% if album.public %}
+        <img id="album-{{ album.id }}" onclick="change_visibility({{ album.id }}, '{% url 'change_album_visibility' album.id %}');" style="width: 38px; position: relative; top:-2px;" src="{% static 'main_pages/images/visibility.png' %}">
+        {% else %}
+        <img id="album-{{ album.id }}" onclick="change_visibility({{ album.id }}, '{% url 'change_album_visibility' album.id %}');" style="width: 38px; position: relative; top:-2px;" src="{% static 'main_pages/images/visibility_off.png' %}">
+        {% endif %}
+    </div>
+    {% endif %}
+    </div>
+    {% endfor %}
+
+
+</div>
+{% else %}
+<div class="advice" style="background-image:url({% static 'main_pages/images/no_albums.jpg' %})">
+    <p>Кажется вы не создали ни одного альбома.</p>
+    <a href="" class="create">Создать альбом</a>
+</div>
+{% endif %}
+{% if page_obj.has_other_pages %}
+<div>
+    <ul class="pagination-wrapper">
+        {% if page_obj.has_previous %}
+            {% if is_self %}
+            <li class="page-num"><a href="?page={{ page_obj.previous_page_number }}"><</a></li>
+            {% else %}
+            <li class="page-num"><a href="?u={{ username }}&page={{ page_obj.previous_page_number }}"><</a></li>
+            {% endif %}
+        {% endif %}
+        {% for page in paginator.page_range %}
+            {% if page == page_obj.number %}
+            <li class="page-num active">{{ page }}</li>
+            {% elif page >= page_obj.number|add:-2 and page <= page_obj.number|add:2 %}
+            {% if is_self %}
+            <li class="page-num">
+                <a href="?page={{ page }}">{{ page }}</a>
+            </li>
+            {% else %}
+            <li class="page-num">
+                <a href="?u={{ username }}&page={{ page }}">{{ page }}</a>
+            </li>
+            {% endif %}
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+        {% if is_self %}
+        <li class="page-num"><a href="?page={{ page_obj.next_page_number }}">&gt;</a></li>
+        {% else %}
+        <li class="page-num"><a href="?u={{ username }}&page={{ page_obj.next_page_number }}">&gt;</a></li>
+        {% endif %}
+        {% endif %}
+    </ul>
+</div>
+{% endif %}
+</div>
+{% if is_self %}
+    {% include 'main_pages/includes/confirmation_form.html' %}
+{% endif %}
+<link href="{% static 'main_pages/css/albums.css' %}" rel="stylesheet">
+<link href="{% static 'main_pages/css/buttons.css' %}" rel="stylesheet">
+<script type="text/javascript">
+    function change_visibility(id, request_url)
+    {
+        let xhr = new XMLHttpRequest();
+        let form_data = 'album_id=' + id;
+        let item = document.querySelector("#album-" + id);  // Получаем кнопку управления
+        xhr.open('POST', request_url);  // Открываем запрос
+        xhr.response_type = 'json';
+        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');  // Устанавливаем заголовки
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.onload = () => {
+            if (xhr.status !== 200){
+                return;
+            }
+            let json = JSON.parse(xhr.responseText);  // Преобразуем текст в json
+            if (json.new_visibility){
+                item.src = "{% static 'main_pages/images/visibility.png' %}";
+            }
+            else{
+                item.src = "{% static 'main_pages/images/visibility_off.png' %}";
+            }
+        };
+        xhr.send(form_data);  // Отправляем запрос
+    }
+
+    let list_wrapper = document.querySelector('div.list_wrapper');
+    let pagination = document.querySelector('ul.pagination-wrapper');
+
+    pagination.addEventListener("click", function(event){  // event - объект события
+        event.preventDefault();  // Отменяем действие
+        let target = event.target;  // объект на котором произошло действие
+        if (target.tagName === 'A'){
+            let page_url = target.getAttribute('href');
+            let xhr = new XMLHttpRequest();
+            xhr.open('GET', page_url);
+            xhr.onload = () => {
+                if (xhr.status !== 200){
+                    return;
+                }
+                let dom = new DOMParser().parseFromString(xhr.responseText, 'text/html');  // Превратим в html
+                list_wrapper.innerHTML = dom.querySelector('div.list_wrapper').innerHTML;  // заменим содержимое
+                pagination.innerHTML = dom.querySelector('ul.pagination-wrapper').innerHTML;  // заменим строку с пагинацией
+            }
+            xhr.send();
+        }
+    });
+</script>
+{% endblock content %}

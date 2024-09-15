@@ -1,0 +1,98 @@
+.wrapper{
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.standard_image{
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.vertical_image{
+    width: 150px;
+    height: 200px;
+}
+
+.horizontal_image{
+    width:250px;
+    height: 200px;
+}
+
+.images{
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+}
+
+.image{
+    margin: 20px;
+    box-shadow: 4px 1px 12px 0px;
+}
+
+div.image:hover{
+    background-color: black;
+}
+
+.about_image{
+    width: 100%;
+    height: 100%;
+    transition: background 0.5s;
+    display: flex;
+    padding: 20px;
+    flex-direction:column;
+}
+
+.about_image p{
+    display: none;
+    margin-top: 0px;
+}
+
+div.about_image:hover{
+
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: #0000007a;
+
+}
+
+div.about_image:hover p{
+    display: block;
+}
+
+div.about_image:hover div.actions{
+    display: flex;
+}
+
+.actions{
+    width: 100px;
+    display: none;
+    justify-content: space-between;
+}
+
+.edit{
+    width: 20px;
+    background: white;
+    border-radius: 15px 11px;
+}
+
+.delete{
+    width: 38px;
+}
+
+.about_image img.visibility{
+    width: 38px;
+    display:none;
+    position: relative;
+    top: 0;
+}
+
+div.about_image:hover img.visibility{
+    display: block;
+}

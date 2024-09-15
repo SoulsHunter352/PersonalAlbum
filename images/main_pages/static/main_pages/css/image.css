@@ -1,0 +1,90 @@
+
+@media screen and (min-width: 960px){
+    .item{
+    /*width: 80%;*/
+        margin: 20px;
+    }
+
+    .about_image{
+        display: flex;
+    }
+
+    .vertical_image{
+        width: 300px;
+        height: 400px;
+    }
+
+    .horizontal_image{
+        width: 650px;
+        height: 400px;
+    }
+}
+
+@media screen and (max-width: 960px){
+    .item{
+        margin: 20px;
+    }
+
+    .about_image{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .vertical_image{
+        width: 200px;
+        height: 300px;
+    }
+
+    .horizontal_image{
+        width: 350px;
+        height: 200px;
+    }
+}
+
+.content{
+    display: flex;
+    flex-direction: column;
+}
+
+.item_image{
+    background-size:cover;
+    box-shadow: 9px 4px 10px 2px black, -9px 4px 10px 2px black;
+    margin: 20px;
+}
+
+
+.image_title{
+    text-align: center;
+}
+
+div.about_image.vertical{
+    flex-direction: column;
+}
+
+.description{
+    margin: 30px;
+}
+
+.edit_button_item{
+   background: blue;
+   border: 3px solid #2d862d;
+   color: white;
+   height: 29px;
+   border-radius: 2px;
+   text-decoration: none;
+   padding: 7px;
+   font-weight: 400;
+   font-size: larger;
+}
+
+.delete_button_item{
+   background: red;
+   border: 3px solid #2d862d;
+   color: white;
+   height: 29px;
+   border-radius: 2px;
+   text-decoration: none;
+   padding: 7px;
+   font-weight: 400;
+   font-size: larger;
+}

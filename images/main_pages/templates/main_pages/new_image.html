@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="form-wrapper">
+        <form action="" class="add-album card bg-light" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h3>{{ title }}</h3>
+            <div class="mb-2" style="width: 100%;">
+                <label for="{{ form.title.id_for_label }}" class="form-label small text-muted">{{ form.title.label }}</label>
+                {{ form.title }}
+            </div>
+            <div class="mb-2">
+                <label for="{{ form.photo.id_for_label }}" class="form-label small text-muted">{{ form.photo.label }}</label>
+                {{ form.photo }}
+            </div>
+            <div class="mb-2">
+                <label for="{{ form.content.id_for_label }}" class="form-label small text-muted">{{ form.content.label }}</label>
+                {{ form.content }}
+            </div>
+            <div class="mb-2">
+                {{ form.public }}
+                <label for="{{ form.public.id_for_label }}" class="form-label text-muted">{{ form.public.label }}</label>
+            </div>
+            <button class="btn btn-warning" type="submit">{{ title }}</button>
+        </form>
+    </div>
+</div>
+<link href="{% static 'main_pages/css/create_album.css' %}" rel="stylesheet">
+{% endblock content %}
