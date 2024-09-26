@@ -6,6 +6,7 @@
 </ol>
 
 <h2 align='center'>Страница альбомов</h2>
+
 ![Albums](https://github.com/user-attachments/assets/5465b417-bf7d-4ffb-a9ee-5a018cecaa7b)
 <h2 align='center'>Страница картинок внутри альбома</h2>
 ![Images](https://github.com/user-attachments/assets/c33d28c5-8024-437f-a1a2-e2ea5ec91c46)
